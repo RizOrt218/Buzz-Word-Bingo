@@ -1,11 +1,12 @@
 var express    = require( 'express' );
 var bodyParser = require( 'body-parser' );
 var server     = express();
+var route      = express.Router();
 
 server.use( express.static( 'public' ));
 server.use(bodyParser.urlencoded({ extended: true}));
 
-var buzzObjectArr = [];
+var buzzArrObj = [];
 var score = 0;
 
 server.get('/', function (req, res) {
@@ -13,33 +14,40 @@ server.get('/', function (req, res) {
 });
 
 server.get('/buzzwords', function (req, res) {
-  res.send({ buzzwords: buzzObjectArr });
+  res.send({ buzzwords: buzzArrObj });
 });
 
 server.route('/buzzword')
   .post( function (req, res) {
 
-    var reqBody = req.body.buzzWord;
     //check for duplicate before pushing b word to array
-    for( var i = 0; i < buzzObjectArr.length; i++ ){
-      if( buzzObjectArr[i].buzzWord !== reqBody ) {
-        buzzObjectArr.push( req.body );
-        console.log( 'ARE YOU WORKING!' );
-
-        //creating body?
-        var body = {
-          'buzzWord' : reqBody,
-          'points' : req.body.points,
-          'heard' : true
-        };
-
-        res.send({ 'success' : true });
+    if( buzzArrObj.length > 0 ) {
+      for( var i = 0; i < buzzArrObj.length; i++ ) {
+        if( buzzArrObj[i].buzzWord === req.body.buzzWord ) {
+          var message = res.send({
+           'success' : false,
+           'message' : 'Please, choose a different buzzword'
+         });
+          return res.send( message );
+        }
       }
     }
+    buzzArrObj.push( req.body );
+    res.send({ 'success' : true });
   })
 
   .put( function (req, res) {
 
+    if( buzzArrObj.length > 0 ) {
+      for(var i = 0; i < buzzArrObj.length; i++ ) {
+        if( buzzArrObj[i].buzzWord === req.body.buzzWord ) {
+          var message = res.send({
+            'success' : true,
+            'newScore' :
+          })
+        }
+      }
+    }
     var reqBody = req.body;
 
     score += parseInt(req.body.points);
