@@ -1,16 +1,17 @@
-var bodyParser = require( 'body-parser' );
 var express    = require( 'express' );
 var server     = express();
+var bodyParser = require( 'body-parser' );
 
 server.use( express.static( 'public' ));
 server.use(bodyParser.urlencoded({ extended: true}));
 
 var words = [];
-var points = 0;
+var score = 0;
 
 server.get('/', function (req, res) {
   res.send( 'herro' );
 });
+
 
 server.get('/buzzwords', function (req, res) {
   res.send({ buzzwords: words });
@@ -18,18 +19,20 @@ server.get('/buzzwords', function (req, res) {
 
 server.route('/buzzword')
   .post( function (req, res) {
-    words.push({
-      buzzWord : req.body.buzzWord,
-      points : req.body.points,
-      heard : false
-    });
+    //if buzzword already exist, don't
+    //add it and message to use put.
+    words.push( req.body );
+    score += parseInt(req.body.points);
+    console.log(req.body.points);
+    console.log( 'score',score );
     res.send({'success' : true });
   })
 
   .put( function (req, res) {
+    //if bw is same update points
     res.send({
       'success' : true,
-      'newScore' : 2000
+      'newScore' : points
     });
   })
 
@@ -38,7 +41,6 @@ server.route('/buzzword')
       'success' : true
     });
   });
-
 var server = server.listen( 8080, function ( ) {
   var host = 'localhost';
   var port = server.address().port;
