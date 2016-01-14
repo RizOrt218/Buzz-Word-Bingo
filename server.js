@@ -1,7 +1,7 @@
 var express    = require( 'express' );
 var bodyParser = require( 'body-parser' );
 var server     = express();
-var route      = express.Router();
+// var route      = express.Router();
 
 server.use( express.static( 'public' ));
 server.use(bodyParser.urlencoded({ extended: true}));
@@ -23,7 +23,7 @@ server.route('/buzzword')
     //check for duplicate before pushing b word to array
     if( buzzArrObj.length > 0 ) {
       for( var i = 0; i < buzzArrObj.length; i++ ) {
-        if( buzzArrObj[i].buzzWord === req.body.buzzWord ) {
+        if( buzzArrObj[i].buzzWord === req.body ) {
           var message = res.send({
            'success' : false,
            'message' : 'Please, choose a different buzzword'
@@ -38,24 +38,27 @@ server.route('/buzzword')
 
   .put( function (req, res) {
 
+    //check to see if the b word exist, true => take that object
+    //and update points into newScore
     if( buzzArrObj.length > 0 ) {
       for(var i = 0; i < buzzArrObj.length; i++ ) {
         if( buzzArrObj[i].buzzWord === req.body.buzzWord ) {
           var message = res.send({
             'success' : true,
-            'newScore' :
-          })
+            'newScore' : points
+          });
+          return res.send( message );
         }
       }
     }
-    var reqBody = req.body;
+    // var reqBody = req.body;
 
-    score += parseInt(req.body.points);
+    // score += parseInt(req.body.points);
 
-    res.send({
-      'success' : true,
-      'newScore' : score
-    });
+    // res.send({
+    //   'success' : true,
+    //   'newScore' : score
+    // });
   })
 
   .delete( function (req, res) {
