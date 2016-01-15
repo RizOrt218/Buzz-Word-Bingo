@@ -14,24 +14,21 @@ server.get('/', function (req, res) {
 });
 
 server.get('/buzzwords', function (req, res) {
-  return res.send({ buzzwords: buzzArrObj });
+ res.send({ buzzwords: buzzArrObj });
 });
 
 server.route('/buzzword')
   .post( function (req, res) {
-console.log( 'BEFORE POST TESSST');
     // if there's something in the array
-console.log( 'POST TESSST');
     //check for duplicate before pushing b word to array
       for( var i = 0; i < buzzArrObj.length; i++ ) {
         if( buzzArrObj[i].buzzWord === req.body.buzzWord ) {
-          console.log( 'MY REQ BOOODYYYY',req.body );
           //will send out a message if it already exist
           var message = {
            'success' : false,
            'message' : 'Please, choose a different buzzword'
          };
-          return res.send( message );
+         res.send( message );
         }
       }
       //proceed with method if it's a new b word
@@ -40,57 +37,42 @@ console.log( 'POST TESSST');
         'points' : req.body.points,
         'heard' : false
       });
-     return res.send({ 'success' : true });
+    res.send({ 'success' : true });
   })
-
   .put( function (req, res) {
     console.log('PUT REQUEST!!!');
+    var head = {
+      'success' : true,
+      'newScore' : score
+    };
     //check to see if the b word exist, true => take that object
     //and update points into newScore
-    if( buzzArrObj.length > 0 ) {
-      for(var i = 0; i < buzzArrObj.length; i++ ) {
-        if( buzzArrObj[i].buzzWord === req.body.buzzWord ) {
-          if( req.body.heard === 'true' ) {
-            if( score === 0 ) {
-              console.log( 'this be score', score );
-            //take that b word original points and adds more points when heard is true
-                var firstMsg = {
-                  'success' : true,
-                  'newScore' : buzzArrObj[i].points
-                };
-                //adds points to global var
-                score += parseInt( buzzArrObj[i].points );
-                return res.send( firstMsg );
-              }
-            } //end of if( buzzArrOb...
-          if( req.body.heard === 'true' ) {
-            if( score > 0 || score < 0 ) {
-              score += parseInt( buzzArrObj[i].points );
+    for(var i = 0; i < buzzArrObj.length; i++ ) {
+      if( buzzArrObj[i].buzzWord !== req.body.buzzWord ) {
+        var msg = {
+          'success' : false,
+          'message' : 'Not the right method dude'
+        };
+        return rec.send( msg );
+      }
+      if( score === 0 ) {
+        //adds points to global var
+        score += buzzArrObj[i].points;
 
-              var secMsg = {
-                'success' : true,
-                'newScore' : score
-              };
-              return res.send( secMsg );
-            }
-          }
-          else {
-            score -= parseInt( buzzArrObj[i].points );
+        var firstMsg = {
+          'success' : true,
+          'newScore' : buzzArrObj[i].points
+        };
+        return res.send( firstMsg );
+      }
+      if( score !== 0 ) {
+        score += buzzArrObj[i].points ;
 
-            var elseMsg = {
-              'success' : true,
-              'newScore' : score
-            };
-            return res.send( elseMsg );
-          }
-        } //end of if( buzzArrObj[i]
-      } //end of for loop
-    } //end of if( buzzArrObj.length > 0 )
-    var endMsg = res.send({
-      'success' : false,
-      'message' : 'There\'s nothing in the array yet silly! Use a different method'
-    });
-    return res.send( endMsg );
+        return res.send( head );
+      }
+    } //end of for loop
+    score -= buzzArrObj[i].points;
+    return res.send( head );
   })
 
   .delete( function (req, res) {
